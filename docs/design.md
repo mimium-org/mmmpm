@@ -1,0 +1,69 @@
+# mmmpm - specification design
+
+In this document we try to design and describe what is a mimium package and how mmmpm is used.
+
+**The contents shall be changed by discussions**
+
+## Packages
+
+The term *package* denotes a set of files with metadata. The purpose of mimium packages is to construct mimium libraries or applications or songs as reusable, distributable and manageable format.
+
+Usually, packages are directory arranged we specify and hosted as like GitHub repository. Future, packages are archived like .tar.gz or any zipped formats.
+
+It may be good that each package introduces its (package name) namespace because avoiding name confliction between packages another.
+
+### Package structure
+
+Packages must obey *mimium package structure* specified here.
+
+First, packages must contain the `mmmp.toml` (should be discussed about this filename) (toml, JOSN or other format?). This contains package metadata. For details see the section "mmmp.toml".
+
+Second, packages must contain one or more mimium source files. The source files shall directly place at package root or separated directories.
+
+Third, optionally, packages shall contain some *assets*; sound files or score data or any files needed to perform the package.
+
+Here we show example package structure:
+
+```
+mmm-package-example
+├── README.md
+├── kick.wav
+├── main.mmm
+├── mmmp.toml
+└── util.mmm
+```
+
+### `mmmp.toml`
+
+In this secion we describe the `mmmp.toml` file. This contains package metadata like these below:
+
+- metadata
+    - package name (namespase name?)
+    - author information
+    - version information
+- package information
+    - library or application or song?
+    - dependency information (to other mimium packages)
+    - source files or directory where source files are placed
+    - asset files (.wav or any other files allowed by mimium)
+
+I tenporary design the contents of `mmmp.toml` like this (this example is written with refferencing Rust's `Cargo.toml`):
+
+```
+[metadata]
+name = "mmm-package-example"
+version = "0.0.1"
+authors = ["hoge <hoge@example.com>"]
+license = "ISC"
+
+[dependencies]
+# no dependencies
+
+[package]
+source_dir = "/"
+asset_dir = "/"
+```
+
+## `mmmpm` command
+
+TBD
