@@ -44,6 +44,7 @@ In this secion we describe the `mmmp.toml` file. This contains package metadata 
 - package information
     - library or application or song?
     - dependency information (to other mimium packages)
+        - with early version, mmmpm command only can clone from Git repository
     - source files or directory where source files are placed
     - asset files (.wav or any other files allowed by mimium)
 
@@ -57,7 +58,9 @@ authors = ["hoge <hoge@example.com>"]
 license = "ISC"
 
 [dependencies]
-# no dependencies
+example-oscillators = { git = "https://example.com/ociellators.git", version = "1.0.4" }
+# Future, create our central package repository...?
+# filters = "1.0.0"
 
 [package]
 source_dir = "/"
