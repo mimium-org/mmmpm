@@ -72,8 +72,9 @@ source_dir = "/"
 asset_dir = "/"
 ```
 
-### Discussion points
+### Discussion
 
+- consideration about package type (library, application, song or any other?)
 - `mmmp.toml` or other name?
 - format for the package description file: toml, JOSN or other format?
 - fixed filename for the entrypoint? cf. in Rust, `main.rs`
