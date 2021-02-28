@@ -43,6 +43,7 @@ In this secion we describe the `mmmp.toml` file. This contains package metadata 
     - version information
 - package information
     - library or application or song?
+        - entrypoint filename (this file has `dsp()` in it) (or fixed filename for the entrypoint?)
     - dependency information (to other mimium packages)
         - with early version, mmmpm command only can clone from Git repository
     - source files or directory where source files are placed
@@ -63,6 +64,8 @@ example-oscillators = { git = "https://example.com/ociellators.git", version = "
 # filters = "1.0.0"
 
 [package]
+type = "app"
+entrypoint = "main.mmm"
 source_dir = "/"
 asset_dir = "/"
 ```
