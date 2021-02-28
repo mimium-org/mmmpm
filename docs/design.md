@@ -16,7 +16,7 @@ It may be good that each package introduces its (package name) namespace because
 
 Packages must obey *mimium package structure* specified here.
 
-First, packages must contain the `mmmp.toml` (should be discussed about this filename) (toml, JOSN or other format?). This contains package metadata. For details see the section "mmmp.toml".
+First, packages must contain the `mmmp.toml`. This contains package metadata. For details see the section "mmmp.toml".
 
 Second, packages must contain one or more mimium source files. The source files shall directly place at package root or separated directories.
 
@@ -43,11 +43,13 @@ In this secion we describe the `mmmp.toml` file. This contains package metadata 
     - version information
 - package information
     - library or application or song?
-        - entrypoint filename (this file has `dsp()` in it) (or fixed filename for the entrypoint?)
+        - entrypoint filename (this file has `dsp()` in it)
     - dependency information (to other mimium packages)
         - with early version, mmmpm command only can clone from Git repository
     - source files or directory where source files are placed
     - asset files (.wav or any other files allowed by mimium)
+
+### `mmmp.toml` example
 
 I tenporary design the contents of `mmmp.toml` like this (this example is written with refferencing Rust's `Cargo.toml`):
 
@@ -69,6 +71,13 @@ entrypoint = "main.mmm"
 source_dir = "/"
 asset_dir = "/"
 ```
+
+### Discussion points
+
+- `mmmp.toml` or other name?
+- format for the package description file: toml, JOSN or other format?
+- fixed filename for the entrypoint? cf. in Rust, `main.rs`
+- fixed sources and assets directory name? cf. in Rust, `src`
 
 ## `mmmpm` command
 
