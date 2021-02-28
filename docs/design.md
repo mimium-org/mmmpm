@@ -82,4 +82,22 @@ asset_dir = "/"
 
 ## `mmmpm` command
 
-TBD
+```
+Usage: mmmpm COMMAND [OPTIONS]
+
+Commands:
+    install PACKAGE           Install a package and its dependencies
+    list                      List all packages installed
+    run PACKAGE               Run (an application or a song) package specified as PACKAGE or PATH
+
+Options:
+    -V, --version             Print version information
+    -v, --verbose             Prints what mmmpm does
+    -h, --help                Prints help information
+```
+
+where the `PACKAGE` is an package specifier; this includes package name itself, package path or package URL like remote Git repository.
+
+### Duscussion
+
+- `mmm` command as like `go` command or `cargo` command. I thought it may be good idea :)
