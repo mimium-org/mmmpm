@@ -1,0 +1,10 @@
+[package]
+name = "mmmpm"
+version = "0.1.0"
+authors = ["t-sin <shinichi.tanaka45@gmail.com>"]
+description = "A package manager for mimium"
+edition = "2018"
+
+[dependencies]
+clap = { version = "2.33.3", features = ["yaml"] }
+git2 = "0.13.17"

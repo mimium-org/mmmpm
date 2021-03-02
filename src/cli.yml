@@ -1,0 +1,26 @@
+name: mmmpm
+version: "0.1.0"
+author: t-sin <shinichi.tanaka45@gmail.com>
+about: A package manager for mimium
+args:
+    - version:
+        short: V
+        long: config
+        help: Print version information
+    - verbose:
+        short: v
+        long: verbose
+        help: Print what mmmpm does
+subcommands:
+      - install:
+          about: Install a package and its dependencies
+          args:
+              - PACKAGE:
+                  required: true
+      - list:
+          about: List all packages installed
+      - run:
+          about: Run (an application or a song) package specified as PACKAGE or PATH
+          args:
+              - PACKAGE:
+                  required: true
