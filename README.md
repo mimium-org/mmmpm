@@ -1,3 +1,17 @@
 # mmmpm - a mimium package manager
 
-Now we just started to discuss about *packages* and CLI.
+## Build from source
+
+### Requirements
+
+- Cargo (build system and package manager for Rust)
+- libssl-dev
+
+### Build
+
+```
+# build mmmpm
+$ cargo build
+# run
+$ cargo run
+```
