@@ -4,6 +4,9 @@ extern crate log;
 
 extern crate git2;
 
+mod package;
+mod subcommand;
+
 use log::{error, info, LevelFilter};
 use std::fs::create_dir;
 use std::path::PathBuf;
@@ -63,8 +66,9 @@ fn main() {
 
     match matches.subcommand() {
         ("install", Some(sub_m)) => {
-            println!("subcommand: install {}", sub_m.value_of("PACKAGE").unwrap())
+            let _ = subcommand::install(sub_m);
         }
+
         ("list", Some(_)) => println!("subcommand: list"),
         ("run", Some(sub_m)) => {
             println!("subcommand: install {}", sub_m.value_of("PACKAGE").unwrap())
