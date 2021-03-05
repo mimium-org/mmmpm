@@ -1,4 +1,3 @@
-use git2::Repository;
 use log::error;
 use std::path::Path;
 

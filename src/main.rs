@@ -55,24 +55,22 @@ fn main() {
 
     let mimium_dir = determine_mimium_dir();
     if let Some(path) = mimium_dir {
-        match ensure_dir(path) {
-            Ok(_) => (),
+        match ensure_dir(path.clone()) {
+            Ok(_) => match matches.subcommand() {
+                ("install", Some(sub_m)) => {
+                    let _ = subcommand::install(path, sub_m);
+                }
+
+                ("list", Some(_)) => println!("subcommand: list"),
+                ("run", Some(sub_m)) => {
+                    println!("subcommand: install {}", sub_m.value_of("PACKAGE").unwrap())
+                }
+                _ => println!("{}", matches.usage()),
+            },
             err => {
                 error!("Cannot ensure mimium directory because {:?}", err);
                 return;
             }
         }
-    }
-
-    match matches.subcommand() {
-        ("install", Some(sub_m)) => {
-            let _ = subcommand::install(sub_m);
-        }
-
-        ("list", Some(_)) => println!("subcommand: list"),
-        ("run", Some(sub_m)) => {
-            println!("subcommand: install {}", sub_m.value_of("PACKAGE").unwrap())
-        }
-        _ => println!("{}", matches.usage()),
     }
 }
