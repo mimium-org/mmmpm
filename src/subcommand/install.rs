@@ -89,7 +89,7 @@ fn install_git_repo<'a>(
     }
 }
 
-fn proc<'a>(mimium_dir: PathBuf, opt: CmdOption) -> Result<(), InstallError<'a>> {
+fn install_package<'a>(mimium_dir: PathBuf, opt: CmdOption) -> Result<(), InstallError<'a>> {
     match opt.package {
         Package::Git { host, path } => install_git_repo(mimium_dir, host, path),
         Package::Pkg(_name) => Err(InstallError::PackageTypeIsNotImplemented),
@@ -102,7 +102,7 @@ pub fn install<'a>(
     matches: &'a ArgMatches<'a>,
 ) -> Result<(), InstallError<'a>> {
     match parse_options(matches) {
-        Ok(opts) => proc(mimium_dir, opts),
+        Ok(opts) => install_package(mimium_dir, opts),
         Err(err) => Err(err),
     }
 }
