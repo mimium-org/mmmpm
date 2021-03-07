@@ -92,3 +92,16 @@ pub fn is_mimium_package(pkg_path: &PathBuf) -> Result<bool, io::Error> {
         }
     }
 }
+
+pub struct PackageConfig {
+    pub entrypoint: String,
+}
+
+impl PackageConfig {
+    pub fn get_config(_pkg_path: &Path) -> Result<PackageConfig, ()> {
+        let config = PackageConfig {
+            entrypoint: "test.mmm".to_string(),
+        };
+        Ok(config)
+    }
+}
