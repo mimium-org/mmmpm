@@ -5,11 +5,42 @@ use std::path::{Path, PathBuf};
 use log::{error, info};
 
 // TODO: implement fmt::Display
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Package {
     Pkg(String),
     Git { host: String, path: String },
     Path(Box<Path>),
+}
+
+impl Package {
+    pub fn name(&self) -> String {
+        match self {
+            Package::Pkg(name) => name.to_string(),
+            Package::Git { host: _, path } => {
+                let path_buf = PathBuf::from(path.clone());
+                path_buf.file_name().unwrap().to_str().unwrap().to_string()
+            }
+            Package::Path(path) => path.file_name().unwrap().to_str().unwrap().to_string(),
+        }
+    }
+
+    pub fn path(&self) -> PathBuf {
+        let name = self.name();
+
+        match self.clone() {
+            Package::Pkg(_) => PathBuf::from(format!("mmmp/{}", name)),
+            Package::Git { host, path: _ } => PathBuf::from(format!("{}/{}", host, name)),
+            Package::Path(path) => path.to_path_buf(),
+        }
+    }
+
+    pub fn remote_url(&self) -> Option<String> {
+        match self {
+            Package::Pkg(_) => None,
+            Package::Git { host, path } => Some(format!("https://{}/{}.git", host, path)),
+            Package::Path(_) => None,
+        }
+    }
 }
 
 pub fn package_from_string(pkg: String) -> Result<Package, ()> {
