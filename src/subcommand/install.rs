@@ -11,12 +11,19 @@ struct CmdOption {
     package: Package,
 }
 
-fn parse_option(matches: &ArgMatches) -> Result<CmdOption, ()> {
+fn parse_options(matches: &ArgMatches) -> Result<CmdOption, ()> {
+    // initialize with dummy values
+    let mut opts = CmdOption {
+        package: Package::Pkg("***".to_string()),
+    };
+
     if let Ok(pkg) = package_from_string(String::from(matches.value_of("PACKAGE").unwrap())) {
-        Ok(CmdOption { package: pkg })
+        opts.package = pkg;
     } else {
-        Err(())
+        return Err(());
     }
+
+    Ok(opts)
 }
 
 fn clone_git_repo(mimium_dir: PathBuf, host: String, path: String) -> Result<String, ()> {
@@ -92,8 +99,8 @@ fn proc(mimium_dir: PathBuf, opt: CmdOption) -> Result<(), ()> {
 }
 
 pub fn install(mimium_dir: PathBuf, matches: &ArgMatches) -> Result<(), ()> {
-    if let Ok(opt) = parse_option(matches) {
-        proc(mimium_dir, opt)
+    if let Ok(opts) = parse_options(matches) {
+        proc(mimium_dir, opts)
     } else {
         Err(())
     }
