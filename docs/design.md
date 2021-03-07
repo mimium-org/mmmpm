@@ -10,7 +10,13 @@ The term *package* denotes a set of files with metadata. The purpose of mimium p
 
 Usually, packages are directory arranged we specify and hosted as like GitHub repository. Future, packages are archived like .tar.gz or any zipped formats.
 
-It may be good that each package introduces its (package name) namespace because avoiding name confliction between packages another.
+### For compiler
+
+- The compiler should introduce namespace facility
+    - to avoid name confliction between other packages
+    - a certain package introduces its (package name) namespace
+- The compiler should package loading strategy
+    - to resolve and load packages
 
 ### Package structure
 
@@ -76,7 +82,6 @@ asset_dir = "/"
 
 - consideration about package type (library, application, song or any other?)
 - `mmmp.toml` or other name?
-- format for the package description file: toml, JOSN or other format?
 - fixed filename for the entrypoint? cf. in Rust, `main.rs`
 - fixed sources and assets directory name? cf. in Rust, `src`
 
