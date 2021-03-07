@@ -2,9 +2,35 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
-use log::{error, info};
+use log::info;
 
 use crate::constant;
+
+pub struct PackageDesignator(pub String);
+
+impl PackageDesignator {
+    pub fn package(&self) -> Result<Package, ()> {
+        // TODO: Describe package designater convension
+
+        if let Some(_) = self.0.find(':') {
+            // if it's possibly a Git repository (including `:` like `github.com:mimium-org/mimium`
+            let vec: Vec<&str> = self.0.splitn(2, ":").collect();
+            if vec.len() == 2 {
+                Ok(Package::Git {
+                    host: vec.get(0).unwrap().to_string(),
+                    path: vec.get(1).unwrap().to_string(),
+                })
+            } else {
+                error!("mulformed package designator");
+                Err(())
+            }
+        } else {
+            // if it's not a Git repos so it's wheather normal package or path
+            // for now, all not-a-Git packages are normal packages
+            Ok(Package::Pkg(self.0.clone()))
+        }
+    }
+}
 
 // TODO: implement fmt::Display
 #[derive(Debug, Clone)]
@@ -42,28 +68,6 @@ impl Package {
             Package::Git { host, path } => Some(format!("https://{}/{}.git", host, path)),
             Package::Path(_) => None,
         }
-    }
-}
-
-pub fn package_from_string(package_designator: String) -> Result<Package, ()> {
-    // TODO: Describe package designater convension
-
-    if let Some(_) = package_designator.find(':') {
-        // if it's possibly a Git repository (including `:` like `github.com:mimium-org/mimium`
-        let vec: Vec<&str> = package_designator.splitn(2, ":").collect();
-        if vec.len() == 2 {
-            Ok(Package::Git {
-                host: vec.get(0).unwrap().to_string(),
-                path: vec.get(1).unwrap().to_string(),
-            })
-        } else {
-            error!("mulformed package designator");
-            Err(())
-        }
-    } else {
-        // if it's not a Git repos so it's wheather normal package or path
-        // for now, all not-a-Git packages are normal packages
-        Ok(Package::Pkg(package_designator))
     }
 }
 

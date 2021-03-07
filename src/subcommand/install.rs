@@ -6,7 +6,7 @@ use clap::ArgMatches;
 use git2::{Error, Repository};
 use log::{error, info};
 
-use crate::package::{is_mimium_package, package_from_string, Package};
+use crate::package::{is_mimium_package, Package, PackageDesignator};
 
 pub enum InstallError<'a> {
     InvalidOptions(&'a ArgMatches<'a>),
@@ -28,7 +28,8 @@ fn parse_options<'a>(matches: &'a ArgMatches<'a>) -> Result<CmdOption, InstallEr
         package: Package::Pkg("***".to_string()),
     };
 
-    if let Ok(pkg) = package_from_string(String::from(matches.value_of("PACKAGE").unwrap())) {
+    let pkg = PackageDesignator(String::from(matches.value_of("PACKAGE").unwrap()));
+    if let Ok(pkg) = pkg.package() {
         opts.package = pkg;
     } else {
         return Err(InstallError::InvalidOptions(matches));
