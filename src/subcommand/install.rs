@@ -22,7 +22,9 @@ fn parse_option(matches: &ArgMatches) -> Result<CmdOption, ()> {
 fn clone_git_repo(mimium_dir: PathBuf, host: String, path: String) -> Result<String, ()> {
     let repo_url = format!("https://{}/{}.git", host, path);
     // TODO: Protection from the directory traversal attack?
-    let pkg_path = format!("{}/{}/{}", mimium_dir.to_str().unwrap(), host, path);
+    let path_buf = PathBuf::from(path.clone());
+    let repo_name = path_buf.file_name().unwrap().to_str().unwrap();
+    let pkg_path = format!("{}/{}/{}", mimium_dir.to_str().unwrap(), host, &repo_name);
 
     info!("Cloning into {:?}...", pkg_path);
     // NOTE: libgit2 cannot shallow clone...
