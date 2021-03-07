@@ -3,6 +3,8 @@ extern crate dirs;
 extern crate log;
 
 extern crate git2;
+extern crate serde;
+extern crate toml;
 
 mod constant;
 mod package;

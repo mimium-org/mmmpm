@@ -1,6 +1,9 @@
 use std::fs;
 use std::io;
+use std::io::prelude::*;
 use std::path::{Path, PathBuf};
+
+use serde::Deserialize;
 
 use log::{error, info};
 
@@ -91,15 +94,22 @@ pub fn is_mimium_package(pkg_path: &PathBuf) -> Result<bool, io::Error> {
     }
 }
 
+#[derive(Deserialize)]
 pub struct Package {
     pub entrypoint: String,
 }
 
 impl Package {
-    pub fn parse_path(_pkg_path: &Path) -> Result<Package, ()> {
-        let pkg = Package {
-            entrypoint: "test.mmm".to_string(),
-        };
-        Ok(pkg)
+    pub fn parse_path(pkg_path: &Path) -> Result<Package, toml::de::Error> {
+        info!("Parse package file {:?}", pkg_path);
+
+        let mut pkg_file = String::new();
+        let mut f = fs::File::open(pkg_path).unwrap();
+        let _ = f.read_to_string(&mut pkg_file);
+
+        match toml::from_str(&pkg_file) {
+            Ok(pkg) => Ok(pkg),
+            Err(err) => Err(err),
+        }
     }
 }

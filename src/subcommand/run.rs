@@ -37,7 +37,6 @@ fn parse_options<'a>(matches: &'a ArgMatches<'a>) -> Result<CmdOption, RunError<
 fn run_package<'a>(mimium_dir: PathBuf, pkg: Package, opt: CmdOption) -> Result<(), RunError<'a>> {
     info!("Run package {}.", opt.package_designator.name());
 
-    // TODO: Get from mmmp.toml
     let entrypoint_path = format!(
         "{}/{}/{}",
         mimium_dir.to_str().unwrap(),
@@ -68,9 +67,10 @@ pub fn run<'a>(mimium_dir: PathBuf, matches: &'a ArgMatches<'a>) -> Result<(), R
     match parse_options(matches) {
         Ok(opt) => {
             let pkg_path = PathBuf::from(format!(
-                "{}/{}",
+                "{}/{}/{}",
                 mimium_dir.to_str().unwrap(),
                 opt.package_designator.path().to_str().unwrap(),
+                constant::MMMPM_PACKAGE_FILE,
             ));
             match Package::parse_path(&pkg_path) {
                 Ok(pkg) => run_package(mimium_dir, pkg, opt),
