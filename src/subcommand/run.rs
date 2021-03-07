@@ -69,7 +69,7 @@ pub fn run<'a>(mimium_dir: PathBuf, matches: &'a ArgMatches<'a>) -> Result<(), R
                 opt.package_designator.path().to_str().unwrap(),
                 MMMPM_PACKAGE_FILE,
             ));
-            match Package::parse_path(&pkg_path) {
+            match Package::from_path(&pkg_path) {
                 Ok(pkg) => run_package(mimium_dir, pkg, opt),
                 Err(_) => Err(RunError::MalformedPackageConfig),
             }

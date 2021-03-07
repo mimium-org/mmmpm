@@ -100,7 +100,7 @@ pub struct Package {
 }
 
 impl Package {
-    pub fn parse_path(pkg_path: &Path) -> Result<Package, toml::de::Error> {
+    pub fn from_path(pkg_path: &Path) -> Result<Package, toml::de::Error> {
         info!("Parse package file {:?}", pkg_path);
 
         let mut pkg_file = String::new();
