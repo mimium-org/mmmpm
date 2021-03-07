@@ -7,7 +7,7 @@ use serde::Deserialize;
 
 use log::{error, info};
 
-use crate::constant;
+use crate::constant::{MMMPM_GIT_DIR, MMMPM_PACKAGE_DIR, MMMPM_PACKAGE_FILE};
 
 // TODO: implement fmt::Display
 #[derive(Debug, Clone)]
