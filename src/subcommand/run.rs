@@ -1,13 +1,17 @@
+use std::io;
 use std::path::PathBuf;
+use std::process::Command;
 
 use clap::ArgMatches;
-use log::{error, info};
+use log::info;
 
-use crate::package::{package_from_string, Package};
+use crate::constant;
+use crate::package::{Package, PackageDesignator};
 
 pub enum RunError<'a> {
     InvalidOptions(&'a ArgMatches<'a>),
-    PackageTypeIsNotImplemented,
+    MimiumFailed,
+    IOError(io::Error),
 }
 
 struct CmdOption {
@@ -19,7 +23,8 @@ fn parse_options<'a>(matches: &'a ArgMatches<'a>) -> Result<CmdOption, RunError<
     let mut opts = CmdOption {
         package: Package::Pkg("***".to_string()),
     };
-    if let Ok(pkg) = package_from_string(String::from(matches.value_of("PACKAGE").unwrap())) {
+    let pkg = PackageDesignator(String::from(matches.value_of("PACKAGE").unwrap()));
+    if let Ok(pkg) = pkg.package() {
         opts.package = pkg;
     } else {
         return Err(RunError::InvalidOptions(matches));
@@ -28,21 +33,40 @@ fn parse_options<'a>(matches: &'a ArgMatches<'a>) -> Result<CmdOption, RunError<
     Ok(opts)
 }
 
-fn run_git_repo<'a>(mimium_dir: PathBuf, host: String, path: String) -> Result<(), RunError<'a>> {
-    Ok(())
-}
+fn run_package<'a>(mimium_dir: PathBuf, opt: CmdOption) -> Result<(), RunError<'a>> {
+    info!("Run package {}.", opt.package.name());
 
-fn proc<'a>(mimium_dir: PathBuf, opt: CmdOption) -> Result<(), RunError<'a>> {
-    match opt.package {
-        Package::Git { host, path } => run_git_repo(mimium_dir, host, path),
-        Package::Pkg(_name) => Err(RunError::PackageTypeIsNotImplemented),
-        Package::Path(_path) => Err(RunError::PackageTypeIsNotImplemented),
+    // TODO: Get from mmmp.toml
+    let entrypoint = "test.mmm";
+    let entrypoint_path = format!(
+        "{}/{}/{}",
+        mimium_dir.to_str().unwrap(),
+        opt.package.path().to_str().unwrap(),
+        entrypoint,
+    );
+    let args = &[entrypoint_path];
+
+    info!("Run mimium with args: {:?}", args);
+
+    match Command::new(constant::MIMIUM_EXECUTABLE)
+        .args(args)
+        .output()
+    {
+        Ok(output) => {
+            if output.status.success() {
+                Ok(())
+            } else {
+                println!("stderr:\n{}", std::str::from_utf8(&output.stderr).unwrap());
+                Err(RunError::MimiumFailed)
+            }
+        }
+        Err(err) => Err(RunError::IOError(err)),
     }
 }
 
 pub fn run<'a>(mimium_dir: PathBuf, matches: &'a ArgMatches<'a>) -> Result<(), RunError<'a>> {
     match parse_options(matches) {
-        Ok(opt) => proc(mimium_dir, opt),
+        Ok(opt) => run_package(mimium_dir, opt),
         Err(err) => Err(err),
     }
 }

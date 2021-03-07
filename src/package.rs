@@ -2,7 +2,7 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
-use log::info;
+use log::{error, info};
 
 use crate::constant;
 
