@@ -4,6 +4,7 @@ extern crate log;
 
 extern crate git2;
 
+mod constant;
 mod package;
 mod subcommand;
 
@@ -11,13 +12,11 @@ use log::{error, info, LevelFilter};
 use std::fs::create_dir;
 use std::path::PathBuf;
 
-const MIMIUM_DIR: &str = ".mimium";
-
 fn determine_mimium_dir() -> Option<PathBuf> {
     match dirs::home_dir() {
         Some(path) => {
             let mut path = path.clone();
-            path.push(MIMIUM_DIR);
+            path.push(constant::MMMPM_DIR);
             info!("mimium directory = {:?}", path);
             Some(path)
         }

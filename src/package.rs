@@ -4,6 +4,8 @@ use std::path::{Path, PathBuf};
 
 use log::{error, info};
 
+use crate::constant;
+
 // TODO: implement fmt::Display
 #[derive(Debug, Clone)]
 pub enum Package {
@@ -65,7 +67,9 @@ pub fn is_mimium_package(pkg_path: &PathBuf) -> Result<bool, io::Error> {
     info!("Validating repository cloned is a mimium package.");
     match fs::read_dir(pkg_path) {
         Ok(mut entries) => {
-            if let Some(_) = entries.find(|e| e.as_ref().unwrap().file_name() == "mmmp.toml") {
+            if let Some(_) =
+                entries.find(|e| e.as_ref().unwrap().file_name() == constant::MMMPM_PACKAGE_FILE)
+            {
                 info!("'mmmp.toml' is found.");
                 // TODO: is this package loadable?
                 Ok(true)
