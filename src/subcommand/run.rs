@@ -5,12 +5,15 @@ use std::process::Command;
 use clap::ArgMatches;
 use log::info;
 
-use crate::constant::{MIMIUM_EXECUTABLE, MMMPM_PACKAGE_FILE};
+use crate::constant::MIMIUM_EXECUTABLE;
 use crate::package::{Package, PackageDesignator};
 
+#[derive(Debug)]
 pub enum RunError<'a> {
     InvalidOptions(&'a ArgMatches<'a>),
-    MalformedPackageConfig,
+    CannotDeterminePackageType,
+    CannotFoundPackageFile,
+    MalformedPackage,
     MimiumFailed,
     IOError(io::Error),
 }
@@ -40,7 +43,7 @@ fn run_package<'a>(mimium_dir: PathBuf, pkg: Package, opt: CmdOption) -> Result<
     let entrypoint_path = format!(
         "{}/{}/{}",
         mimium_dir.to_str().unwrap(),
-        opt.package_designator.path().to_str().unwrap(),
+        opt.package_designator.path().unwrap().to_str().unwrap(),
         pkg.entrypoint,
     );
     let args = &[entrypoint_path];
@@ -62,18 +65,23 @@ fn run_package<'a>(mimium_dir: PathBuf, pkg: Package, opt: CmdOption) -> Result<
 
 pub fn run<'a>(mimium_dir: PathBuf, matches: &'a ArgMatches<'a>) -> Result<(), RunError<'a>> {
     match parse_options(matches) {
-        Ok(opt) => {
-            let pkg_path = PathBuf::from(format!(
-                "{}/{}/{}",
-                mimium_dir.to_str().unwrap(),
-                opt.package_designator.path().to_str().unwrap(),
-                MMMPM_PACKAGE_FILE,
-            ));
-            match Package::from_path(&pkg_path) {
-                Ok(pkg) => run_package(mimium_dir, pkg, opt),
-                Err(_) => Err(RunError::MalformedPackageConfig),
+        Ok(mut opt) => match opt.package_designator.determine(mimium_dir.clone()) {
+            Ok(pkg_dsn) => {
+                opt.package_designator = pkg_dsn.clone();
+
+                if !pkg_dsn.exists(mimium_dir.clone()) {
+                    Err(RunError::CannotFoundPackageFile)
+                } else {
+                    let mut pkg_path = mimium_dir.clone();
+                    pkg_path.extend(&[pkg_dsn.package_file_path().unwrap()]);
+                    match Package::from_path(&pkg_path) {
+                        Ok(pkg) => run_package(mimium_dir, pkg, opt),
+                        Err(_) => Err(RunError::MalformedPackage),
+                    }
+                }
             }
-        }
+            Err(_) => Err(RunError::CannotDeterminePackageType),
+        },
         Err(err) => Err(err),
     }
 }
