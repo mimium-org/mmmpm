@@ -47,7 +47,7 @@ fn clone_git_repo<'a>(
     let pkg_path = format!(
         "{}/{}",
         mimium_dir.to_str().unwrap(),
-        pkg_dsn.path().to_str().unwrap()
+        pkg_dsn.path().unwrap().to_str().unwrap()
     );
 
     info!("Cloning into {:?}...", pkg_path);
@@ -105,6 +105,7 @@ fn install_package<'a>(mimium_dir: PathBuf, opt: CmdOption) -> Result<(), Instal
         }
         PackageDesignator::Pkg(_name) => Err(InstallError::PackageTypeIsNotImplemented),
         PackageDesignator::Path(_path) => Err(InstallError::PackageTypeIsNotImplemented),
+        PackageDesignator::Indeterminated(_path) => Err(InstallError::PackageTypeIsNotImplemented),
     }
 }
 
