@@ -5,7 +5,7 @@ use std::process::Command;
 use clap::ArgMatches;
 use log::info;
 
-use crate::constant;
+use crate::constant::{MIMIUM_EXECUTABLE, MMMPM_PACKAGE_FILE};
 use crate::package::{Package, PackageDesignator};
 
 pub enum RunError<'a> {
@@ -47,10 +47,7 @@ fn run_package<'a>(mimium_dir: PathBuf, pkg: Package, opt: CmdOption) -> Result<
 
     info!("Run mimium with args: {:?}", args);
 
-    match Command::new(constant::MIMIUM_EXECUTABLE)
-        .args(args)
-        .output()
-    {
+    match Command::new(MIMIUM_EXECUTABLE).args(args).output() {
         Ok(output) => {
             if output.status.success() {
                 Ok(())
@@ -70,7 +67,7 @@ pub fn run<'a>(mimium_dir: PathBuf, matches: &'a ArgMatches<'a>) -> Result<(), R
                 "{}/{}/{}",
                 mimium_dir.to_str().unwrap(),
                 opt.package_designator.path().to_str().unwrap(),
-                constant::MMMPM_PACKAGE_FILE,
+                MMMPM_PACKAGE_FILE,
             ));
             match Package::parse_path(&pkg_path) {
                 Ok(pkg) => run_package(mimium_dir, pkg, opt),
