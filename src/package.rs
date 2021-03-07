@@ -88,6 +88,62 @@ impl PackageDesignator {
         }
     }
 
+    pub fn determine(&self, root_dir: PathBuf) -> Result<Self, ()> {
+        match self.clone() {
+            PackageDesignator::Indeterminated(name) => {
+                info!("Determine package type of {}", name.clone());
+
+                // First, check if it's a normal package so search in `mmmp` directory
+                info!("Check if it'a mmmpm package");
+                let mut mmmpm_dir = root_dir.clone();
+                mmmpm_dir.extend(&[MMMPM_PACKAGE_DIR]);
+                if let Ok(mut entries) = fs::read_dir(mmmpm_dir) {
+                    // Find same name directory, it's a package
+                    if let Some(_) = entries.find(|e| {
+                        let e = e.as_ref().unwrap();
+                        e.file_type().unwrap().is_dir() && name == e.file_name().to_str().unwrap()
+                    }) {
+                        info!("It's a mmmpm package");
+                        return Ok(PackageDesignator::Pkg(name.clone()));
+                    }
+                }
+
+                // Second, check if it's a Git repo so search in Git repos.
+                info!("Check if it'a git package");
+                let mut git_dir = root_dir.clone();
+                git_dir.extend(&[MMMPM_PACKAGE_DIR]);
+                if let Ok(entries) = fs::read_dir(git_dir) {
+                    // For all Git repository host directories ...
+                    for entry in
+                        entries.filter(|e| e.as_ref().unwrap().file_type().unwrap().is_dir())
+                    {
+                        let host_dir = entry.unwrap();
+                        if let Ok(mut entries) = fs::read_dir(host_dir.path()) {
+                            // Find same name directory, it's a package
+                            if let Some(_) = entries.find(|e| {
+                                let e = e.as_ref().unwrap();
+                                e.file_type().unwrap().is_dir()
+                                    && name == e.file_name().to_str().unwrap()
+                            }) {
+                                let host = host_dir.file_name().to_str().unwrap().to_string();
+                                info!("It's a Git package in {}", host);
+                                return Ok(PackageDesignator::Git {
+                                    host: host,
+                                    path: name.clone(),
+                                });
+                            }
+                        }
+                    }
+                }
+
+                // Finally, we cannot determine type because it's not found in .mimium directory.
+                error!("Cannot determine its type for the package {}", name.clone());
+                Err(())
+            }
+            pkg_dsn => Ok(pkg_dsn),
+        }
+    }
+
     pub fn exists(&self, root_dir: PathBuf) -> bool {
         if let Ok(path) = self.package_file_path() {
             let mut full_path = root_dir.clone();
