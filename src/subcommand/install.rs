@@ -1,17 +1,19 @@
 use std::fs;
+use std::io;
 use std::path::PathBuf;
 
 use clap::ArgMatches;
 use git2::{Error, Repository};
 use log::{error, info};
 
-use crate::package::{package_from_string, Package};
+use crate::package::{is_mimium_package, package_from_string, Package};
 
 pub enum InstallError<'a> {
     InvalidOptions(&'a ArgMatches<'a>),
     CannotCloneGitRepository(Error),
     MalformedPackage,
     PackageTypeIsNotImplemented,
+    IOError(io::Error),
 }
 
 struct CmdOption {
@@ -61,26 +63,6 @@ fn clone_git_repo<'a>(
     }
 }
 
-fn is_mimium_package(pkg_path: &PathBuf) -> bool {
-    info!("Validating repository cloned is a mimium package.");
-    match fs::read_dir(pkg_path) {
-        Ok(mut entries) => {
-            if let Some(_) = entries.find(|e| e.as_ref().unwrap().file_name() == "mmmp.toml") {
-                info!("'mmmp.toml' is found.");
-                // TODO: is this package loadable?
-                true
-            } else {
-                info!("'mmmp.toml' is not found.");
-                false
-            }
-        }
-        Err(err) => {
-            error!("Read error: {:?}", err);
-            false
-        }
-    }
-}
-
 fn install_git_repo<'a>(
     mimium_dir: PathBuf,
     host: String,
@@ -90,15 +72,17 @@ fn install_git_repo<'a>(
     match clone_git_repo(mimium_dir, host, path.clone()) {
         Ok(pkg_path) => {
             let pkg_path = PathBuf::from(pkg_path);
-            if is_mimium_package(&pkg_path) {
-                Ok(())
-            } else {
-                error!("The repository {} is not a mimium package.", path.clone());
-                info!("Removing the repository {}...", path.clone());
-                if let Err(err) = fs::remove_dir_all(pkg_path.clone()) {
-                    error!("Cannot remove repository because {}", err);
+            match is_mimium_package(&pkg_path) {
+                Ok(true) => Ok(()),
+                Ok(false) => {
+                    error!("The repository {} is not a mimium package.", path.clone());
+                    info!("Removing the repository {}...", path.clone());
+                    if let Err(err) = fs::remove_dir_all(pkg_path.clone()) {
+                        error!("Cannot remove repository because {}", err);
+                    }
+                    Err(InstallError::MalformedPackage)
                 }
-                Err(InstallError::MalformedPackage)
+                Err(err) => Err(InstallError::IOError(err)),
             }
         }
         Err(err) => Err(err),
