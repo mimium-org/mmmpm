@@ -17,6 +17,7 @@ Usually, packages are directory arranged we specify and hosted as like GitHub re
     - a certain package introduces its (package name) namespace
 - The compiler should package loading strategy
     - to resolve and load packages
+    - DISCUSSION RESULT: loading strategy is based on [`include`](https://mimium.org/en/docs/users-guide/language-specification/grammar-rule/#include) facility. So `mmmpm run` simply run `mimium` command with the entrypoint file.
 
 ### Package structure
 
@@ -74,7 +75,6 @@ example-oscillators = { git = "https://example.com/ociellators.git", version = "
 [package]
 type = "app"
 entrypoint = "main.mmm"
-source_dir = "/"
 asset_dir = "/"
 ```
 
