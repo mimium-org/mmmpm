@@ -6,17 +6,23 @@ use log::{error, info};
 
 use crate::constant;
 
-pub struct PackageDesignator(pub String);
+// TODO: implement fmt::Display
+#[derive(Debug, Clone)]
+pub enum PackageDesignator {
+    Pkg(String),
+    Git { host: String, path: String },
+    Path(Box<Path>),
+}
 
 impl PackageDesignator {
-    pub fn package(&self) -> Result<Package, ()> {
+    pub fn from_str(s: String) -> Result<PackageDesignator, ()> {
         // TODO: Describe package designater convension
 
-        if let Some(_) = self.0.find(':') {
+        if let Some(_) = s.find(':') {
             // if it's possibly a Git repository (including `:` like `github.com:mimium-org/mimium`
-            let vec: Vec<&str> = self.0.splitn(2, ":").collect();
+            let vec: Vec<&str> = s.splitn(2, ":").collect();
             if vec.len() == 2 {
-                Ok(Package::Git {
+                Ok(PackageDesignator::Git {
                     host: vec.get(0).unwrap().to_string(),
                     path: vec.get(1).unwrap().to_string(),
                 })
@@ -27,28 +33,20 @@ impl PackageDesignator {
         } else {
             // if it's not a Git repos so it's wheather normal package or path
             // for now, all not-a-Git packages are normal packages
-            Ok(Package::Pkg(self.0.clone()))
+            Ok(PackageDesignator::Pkg(s.clone()))
         }
     }
-}
 
-// TODO: implement fmt::Display
-#[derive(Debug, Clone)]
-pub enum Package {
-    Pkg(String),
-    Git { host: String, path: String },
-    Path(Box<Path>),
-}
-
-impl Package {
     pub fn name(&self) -> String {
         match self {
-            Package::Pkg(name) => name.to_string(),
-            Package::Git { host: _, path } => {
+            PackageDesignator::Pkg(name) => name.to_string(),
+            PackageDesignator::Git { host: _, path } => {
                 let path_buf = PathBuf::from(path.clone());
                 path_buf.file_name().unwrap().to_str().unwrap().to_string()
             }
-            Package::Path(path) => path.file_name().unwrap().to_str().unwrap().to_string(),
+            PackageDesignator::Path(path) => {
+                path.file_name().unwrap().to_str().unwrap().to_string()
+            }
         }
     }
 
@@ -56,17 +54,17 @@ impl Package {
         let name = self.name();
 
         match self.clone() {
-            Package::Pkg(_) => PathBuf::from(format!("mmmp/{}", name)),
-            Package::Git { host, path: _ } => PathBuf::from(format!("{}/{}", host, name)),
-            Package::Path(path) => path.to_path_buf(),
+            PackageDesignator::Pkg(_) => PathBuf::from(format!("mmmp/{}", name)),
+            PackageDesignator::Git { host, path: _ } => PathBuf::from(format!("{}/{}", host, name)),
+            PackageDesignator::Path(path) => path.to_path_buf(),
         }
     }
 
     pub fn remote_url(&self) -> Option<String> {
         match self {
-            Package::Pkg(_) => None,
-            Package::Git { host, path } => Some(format!("https://{}/{}.git", host, path)),
-            Package::Path(_) => None,
+            PackageDesignator::Pkg(_) => None,
+            PackageDesignator::Git { host, path } => Some(format!("https://{}/{}.git", host, path)),
+            PackageDesignator::Path(_) => None,
         }
     }
 }
@@ -93,15 +91,15 @@ pub fn is_mimium_package(pkg_path: &PathBuf) -> Result<bool, io::Error> {
     }
 }
 
-pub struct PackageConfig {
+pub struct Package {
     pub entrypoint: String,
 }
 
-impl PackageConfig {
-    pub fn get_config(_pkg_path: &Path) -> Result<PackageConfig, ()> {
-        let config = PackageConfig {
+impl Package {
+    pub fn parse_path(_pkg_path: &Path) -> Result<Package, ()> {
+        let pkg = Package {
             entrypoint: "test.mmm".to_string(),
         };
-        Ok(config)
+        Ok(pkg)
     }
 }

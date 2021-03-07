@@ -6,7 +6,7 @@ use clap::ArgMatches;
 use log::info;
 
 use crate::constant;
-use crate::package::{Package, PackageConfig, PackageDesignator};
+use crate::package::{Package, PackageDesignator};
 
 pub enum RunError<'a> {
     InvalidOptions(&'a ArgMatches<'a>),
@@ -16,17 +16,17 @@ pub enum RunError<'a> {
 }
 
 struct CmdOption {
-    package: Package,
+    package_designator: PackageDesignator,
 }
 
 fn parse_options<'a>(matches: &'a ArgMatches<'a>) -> Result<CmdOption, RunError<'a>> {
     // initialize with dummy values
     let mut opts = CmdOption {
-        package: Package::Pkg("***".to_string()),
+        package_designator: PackageDesignator::Pkg("***".to_string()),
     };
-    let pkg = PackageDesignator(String::from(matches.value_of("PACKAGE").unwrap()));
-    if let Ok(pkg) = pkg.package() {
-        opts.package = pkg;
+    let pkg_str = String::from(matches.value_of("PACKAGE").unwrap());
+    if let Ok(pkg_dsn) = PackageDesignator::from_str(pkg_str) {
+        opts.package_designator = pkg_dsn;
     } else {
         return Err(RunError::InvalidOptions(matches));
     }
@@ -34,19 +34,15 @@ fn parse_options<'a>(matches: &'a ArgMatches<'a>) -> Result<CmdOption, RunError<
     Ok(opts)
 }
 
-fn run_package<'a>(
-    mimium_dir: PathBuf,
-    pkg_config: PackageConfig,
-    opt: CmdOption,
-) -> Result<(), RunError<'a>> {
-    info!("Run package {}.", opt.package.name());
+fn run_package<'a>(mimium_dir: PathBuf, pkg: Package, opt: CmdOption) -> Result<(), RunError<'a>> {
+    info!("Run package {}.", opt.package_designator.name());
 
     // TODO: Get from mmmp.toml
     let entrypoint_path = format!(
         "{}/{}/{}",
         mimium_dir.to_str().unwrap(),
-        opt.package.path().to_str().unwrap(),
-        pkg_config.entrypoint,
+        opt.package_designator.path().to_str().unwrap(),
+        pkg.entrypoint,
     );
     let args = &[entrypoint_path];
 
@@ -74,10 +70,10 @@ pub fn run<'a>(mimium_dir: PathBuf, matches: &'a ArgMatches<'a>) -> Result<(), R
             let pkg_path = PathBuf::from(format!(
                 "{}/{}",
                 mimium_dir.to_str().unwrap(),
-                opt.package.path().to_str().unwrap(),
+                opt.package_designator.path().to_str().unwrap(),
             ));
-            match PackageConfig::get_config(&pkg_path) {
-                Ok(pkg_config) => run_package(mimium_dir, pkg_config, opt),
+            match Package::parse_path(&pkg_path) {
+                Ok(pkg) => run_package(mimium_dir, pkg, opt),
                 Err(_) => Err(RunError::MalformedPackageConfig),
             }
         }
