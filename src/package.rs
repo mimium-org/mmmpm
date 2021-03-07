@@ -45,9 +45,12 @@ impl Package {
     }
 }
 
-pub fn package_from_string(pkg: String) -> Result<Package, ()> {
-    if let Some(_) = pkg.find(':') {
-        let vec: Vec<&str> = pkg.splitn(2, ":").collect();
+pub fn package_from_string(package_designator: String) -> Result<Package, ()> {
+    // TODO: Describe package designater convension
+
+    if let Some(_) = package_designator.find(':') {
+        // if it's possibly a Git repository (including `:` like `github.com:mimium-org/mimium`
+        let vec: Vec<&str> = package_designator.splitn(2, ":").collect();
         if vec.len() == 2 {
             Ok(Package::Git {
                 host: vec.get(0).unwrap().to_string(),
@@ -58,8 +61,9 @@ pub fn package_from_string(pkg: String) -> Result<Package, ()> {
             Err(())
         }
     } else {
-        error!("not supported!");
-        Err(())
+        // if it's not a Git repos so it's wheather normal package or path
+        // for now, all not-a-Git packages are normal packages
+        Ok(Package::Pkg(package_designator))
     }
 }
 
