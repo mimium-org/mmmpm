@@ -2,16 +2,23 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use clap::ArgMatches;
-use git2::Repository;
+use git2::{Error, Repository};
 use log::{error, info};
 
 use crate::package::{package_from_string, Package};
+
+pub enum InstallError<'a> {
+    InvalidOptions(&'a ArgMatches<'a>),
+    CannotCloneGitRepository(Error),
+    MalformedPackage,
+    PackageTypeIsNotImplemented,
+}
 
 struct CmdOption {
     package: Package,
 }
 
-fn parse_options(matches: &ArgMatches) -> Result<CmdOption, ()> {
+fn parse_options<'a>(matches: &'a ArgMatches<'a>) -> Result<CmdOption, InstallError<'a>> {
     // initialize with dummy values
     let mut opts = CmdOption {
         package: Package::Pkg("***".to_string()),
@@ -20,13 +27,17 @@ fn parse_options(matches: &ArgMatches) -> Result<CmdOption, ()> {
     if let Ok(pkg) = package_from_string(String::from(matches.value_of("PACKAGE").unwrap())) {
         opts.package = pkg;
     } else {
-        return Err(());
+        return Err(InstallError::InvalidOptions(matches));
     }
 
     Ok(opts)
 }
 
-fn clone_git_repo(mimium_dir: PathBuf, host: String, path: String) -> Result<String, ()> {
+fn clone_git_repo<'a>(
+    mimium_dir: PathBuf,
+    host: String,
+    path: String,
+) -> Result<String, InstallError<'a>> {
     let repo_url = format!("https://{}/{}.git", host, path);
     // TODO: Protection from the directory traversal attack?
     let path_buf = PathBuf::from(path.clone());
@@ -40,9 +51,12 @@ fn clone_git_repo(mimium_dir: PathBuf, host: String, path: String) -> Result<Str
             info!("Successfuly cloned package as Git repository.");
             Ok(pkg_path)
         }
-        Err(e) => {
-            error!("Cannot clone Git repository {:?} because {:?}", repo_url, e);
-            Err(())
+        Err(err) => {
+            error!(
+                "Cannot clone Git repository {:?} because {:?}",
+                repo_url, err
+            );
+            Err(InstallError::CannotCloneGitRepository(err))
         }
     }
 }
@@ -67,7 +81,11 @@ fn is_mimium_package(pkg_path: &PathBuf) -> bool {
     }
 }
 
-fn install_git_repo(mimium_dir: PathBuf, host: String, path: String) -> Result<(), ()> {
+fn install_git_repo<'a>(
+    mimium_dir: PathBuf,
+    host: String,
+    path: String,
+) -> Result<(), InstallError<'a>> {
     info!("install {:?} from {:?} as Git repository.", path, host);
     match clone_git_repo(mimium_dir, host, path.clone()) {
         Ok(pkg_path) => {
@@ -80,28 +98,27 @@ fn install_git_repo(mimium_dir: PathBuf, host: String, path: String) -> Result<(
                 if let Err(err) = fs::remove_dir_all(pkg_path.clone()) {
                     error!("Cannot remove repository because {}", err);
                 }
-                Err(())
+                Err(InstallError::MalformedPackage)
             }
         }
-        err => {
-            error!("Clone error: {:?}", err);
-            Err(())
-        }
+        Err(err) => Err(err),
     }
 }
 
-fn proc(mimium_dir: PathBuf, opt: CmdOption) -> Result<(), ()> {
+fn proc<'a>(mimium_dir: PathBuf, opt: CmdOption) -> Result<(), InstallError<'a>> {
     match opt.package {
         Package::Git { host, path } => install_git_repo(mimium_dir, host, path),
-        Package::Pkg(_name) => Err(()),
-        Package::Path(_path) => Err(()),
+        Package::Pkg(_name) => Err(InstallError::PackageTypeIsNotImplemented),
+        Package::Path(_path) => Err(InstallError::PackageTypeIsNotImplemented),
     }
 }
 
-pub fn install(mimium_dir: PathBuf, matches: &ArgMatches) -> Result<(), ()> {
-    if let Ok(opts) = parse_options(matches) {
-        proc(mimium_dir, opts)
-    } else {
-        Err(())
+pub fn install<'a>(
+    mimium_dir: PathBuf,
+    matches: &'a ArgMatches<'a>,
+) -> Result<(), InstallError<'a>> {
+    match parse_options(matches) {
+        Ok(opts) => proc(mimium_dir, opts),
+        Err(err) => Err(err),
     }
 }
