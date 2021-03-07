@@ -64,7 +64,9 @@ fn main() {
 
                 ("list", Some(_)) => println!("subcommand: list"),
                 ("run", Some(sub_m)) => {
-                    let _ = subcommand::run(path, sub_m);
+                    if let Err(err) = subcommand::run(path, sub_m) {
+                        error!("Subcommand `run` failed because of {:?}", err);
+                    }
                 }
                 _ => println!("{}", matches.usage()),
             },
