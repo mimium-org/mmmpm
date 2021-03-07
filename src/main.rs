@@ -63,7 +63,7 @@ fn main() {
 
                 ("list", Some(_)) => println!("subcommand: list"),
                 ("run", Some(sub_m)) => {
-                    println!("subcommand: install {}", sub_m.value_of("PACKAGE").unwrap())
+                    let _ = subcommand::run(path, sub_m);
                 }
                 _ => println!("{}", matches.usage()),
             },
