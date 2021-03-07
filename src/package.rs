@@ -15,6 +15,7 @@ pub enum PackageDesignator {
     Pkg(String),
     Git { host: String, path: String },
     Path(Box<Path>),
+    Indeterminated(String),
 }
 
 impl PackageDesignator {
@@ -34,9 +35,7 @@ impl PackageDesignator {
                 Err(())
             }
         } else {
-            // if it's not a Git repos so it's wheather normal package or path
-            // for now, all not-a-Git packages are normal packages
-            Ok(PackageDesignator::Pkg(s.clone()))
+            Ok(PackageDesignator::Indeterminated(s.clone()))
         }
     }
 
@@ -50,16 +49,33 @@ impl PackageDesignator {
             PackageDesignator::Path(path) => {
                 path.file_name().unwrap().to_str().unwrap().to_string()
             }
+            PackageDesignator::Indeterminated(name) => name.to_string(),
         }
     }
 
-    pub fn path(&self) -> PathBuf {
+    pub fn path(&self) -> Result<PathBuf, ()> {
         let name = self.name();
 
         match self.clone() {
-            PackageDesignator::Pkg(_) => PathBuf::from(format!("mmmp/{}", name)),
-            PackageDesignator::Git { host, path: _ } => PathBuf::from(format!("{}/{}", host, name)),
-            PackageDesignator::Path(path) => path.to_path_buf(),
+            PackageDesignator::Pkg(_) => {
+                Ok(PathBuf::from(format!("{}/{}", MMMPM_PACKAGE_DIR, name)))
+            }
+            PackageDesignator::Git { host, path: _ } => Ok(PathBuf::from(format!(
+                "{}/{}/{}",
+                MMMPM_GIT_DIR, host, name
+            ))),
+            PackageDesignator::Path(path) => Ok(path.to_path_buf()),
+            PackageDesignator::Indeterminated(_) => Err(()),
+        }
+    }
+
+    pub fn package_file_path(&self) -> Result<PathBuf, ()> {
+        if let Ok(path) = self.path() {
+            let mut path = path.clone();
+            path.extend(&[MMMPM_PACKAGE_FILE.parse::<PathBuf>().unwrap()]);
+            Ok(path)
+        } else {
+            Err(())
         }
     }
 
@@ -68,6 +84,23 @@ impl PackageDesignator {
             PackageDesignator::Pkg(_) => None,
             PackageDesignator::Git { host, path } => Some(format!("https://{}/{}.git", host, path)),
             PackageDesignator::Path(_) => None,
+            PackageDesignator::Indeterminated(_) => None,
+        }
+    }
+
+    pub fn exists(&self, root_dir: PathBuf) -> bool {
+        if let Ok(path) = self.package_file_path() {
+            let mut full_path = root_dir.clone();
+            full_path.extend(&[path]);
+
+            info!("Check if the `mmmp.toml` exists at {:?}", full_path);
+            if let Ok(_) = fs::File::open(full_path.as_path()) {
+                true
+            } else {
+                false
+            }
+        } else {
+            false
         }
     }
 }
