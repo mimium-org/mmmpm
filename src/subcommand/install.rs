@@ -2,8 +2,12 @@ use std::fs;
 use std::io;
 use std::path::PathBuf;
 
+use std::io::Write;
+
 use clap::ArgMatches;
 use log::{error, info};
+
+use reqwest;
 
 use crate::package::{is_mimium_package, PackageDesignator};
 
@@ -41,7 +45,19 @@ fn install_github_repo<'a>(
     pkg_dsn: PackageDesignator,
 ) -> Result<(), InstallError<'a>> {
     if let PackageDesignator::Git { host, path } = pkg_dsn.clone() {
-        info!("Install {:?} from {:?} as Git repository.", path, host);
+        info!("Install {:?} from {:?} as GitHub repository.", path, host);
+        let url = format!(
+            "https://api.github.com/repos/{}/{}/zipball/{}",
+            "t-sin", "koto", "master"
+        );
+
+        let client = reqwest::blocking::Client::new();
+        let resp = client
+            .get(url)
+            .header(reqwest::header::USER_AGENT, "mmmpm")
+            .send()
+            .unwrap();
+        io::stdout().write(&resp.bytes().unwrap());
         Ok(())
     } else {
         Err(InstallError::Eden)

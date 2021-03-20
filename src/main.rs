@@ -5,6 +5,8 @@ extern crate log;
 extern crate serde;
 extern crate toml;
 
+extern crate reqwest;
+
 mod constant;
 mod package;
 mod subcommand;
