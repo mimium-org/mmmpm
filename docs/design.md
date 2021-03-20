@@ -23,7 +23,7 @@ Usually, packages are directory arranged we specify and hosted as like GitHub re
 
 Packages must obey *mimium package structure* specified here.
 
-First, packages must contain the `mmmp.toml`. This contains package metadata. For details see the section "mmmp.toml".
+First, packages must contain the `mmm.toml`. This contains package metadata. For details see the section "mmm.toml".
 
 Second, packages must contain one or more mimium source files. The source files shall directly place at package root or separated directories.
 
@@ -36,13 +36,13 @@ mmm-package-example
 ├── README.md
 ├── kick.wav
 ├── main.mmm
-├── mmmp.toml
+├── mmm.toml
 └── util.mmm
 ```
 
-### `mmmp.toml`
+### `mmm.toml`
 
-In this secion we describe the `mmmp.toml` file. This contains package metadata like these below:
+In this secion we describe the `mmm.toml` file. This contains package metadata like these below:
 
 - metadata
     - package name (namespase name?)
@@ -56,9 +56,9 @@ In this secion we describe the `mmmp.toml` file. This contains package metadata 
     - source files or directory where source files are placed
     - asset files (.wav or any other files allowed by mimium)
 
-### `mmmp.toml` example
+### `mmm.toml` example
 
-I tenporary design the contents of `mmmp.toml` like this (this example is written with refferencing Rust's `Cargo.toml`):
+I tenporary design the contents of `mmm.toml` like this (this example is written with refferencing Rust's `Cargo.toml`):
 
 ```
 [metadata]
@@ -81,7 +81,6 @@ asset_dir = "/"
 ### Discussion
 
 - consideration about package type (library, application, song or any other?)
-- `mmmp.toml` or other name?
 - fixed filename for the entrypoint? cf. in Rust, `main.rs`
 - fixed sources and assets directory name? cf. in Rust, `src`
 
