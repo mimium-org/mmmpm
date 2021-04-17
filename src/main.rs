@@ -7,37 +7,7 @@ extern crate toml;
 
 extern crate reqwest;
 
-mod constant;
-
-use log::{error, info, LevelFilter};
-use std::fs::create_dir;
-use std::path::PathBuf;
-
-fn determine_mimium_dir() -> Option<PathBuf> {
-    match dirs::home_dir() {
-        Some(path) => {
-            let mut path = path.clone();
-            path.push(constant::MMMPM_DIR);
-            info!("mimium directory = {:?}", path);
-            Some(path)
-        }
-        None => {
-            error!("Cannot determine mimium directory.");
-            None
-        }
-    }
-}
-
-fn ensure_dir(path: PathBuf) -> Result<(), std::io::Error> {
-    let path = path.into_boxed_path();
-    if !path.exists() {
-        info!("{:?} is not found so is created.", path);
-        create_dir(path)
-    } else {
-        error!("{:?} is found.", path);
-        Ok(())
-    }
-}
+use log::LevelFilter;
 
 fn main() {
     let yaml = clap::load_yaml!("cli.yml");
@@ -53,20 +23,12 @@ fn main() {
         .format_timestamp(None)
         .init();
 
-    let mimium_dir = determine_mimium_dir();
-    if let Some(path) = mimium_dir {
-        match ensure_dir(path.clone()) {
-            Ok(_) => match matches.subcommand() {
-                ("install", Some(sub_m)) => println!("subcommand: install"),
+    // TODO: create filesystem storage from `~/.mimium`
+    match matches.subcommand() {
+        ("install", Some(_)) => println!("subcommand: install"),
 
-                ("list", Some(_)) => println!("subcommand: list"),
-                ("run", Some(sub_m)) => println!("subcommand: run"),
-                _ => println!("{}", matches.usage()),
-            },
-            err => {
-                error!("Cannot ensure mimium directory because {:?}", err);
-                return;
-            }
-        }
+        ("list", Some(_)) => println!("subcommand: list"),
+        ("run", Some(_)) => println!("subcommand: run"),
+        _ => println!("{}", matches.usage()),
     }
 }
