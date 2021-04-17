@@ -1,0 +1,8 @@
+[package]
+name = "mmmpm_package"
+version = "0.1.0"
+authors = ["t-sin <shinichi.tanaka45@gmail.com>"]
+description = "A package abstraction"
+edition = "2018"
+
+[dependencies]
