@@ -84,15 +84,16 @@ impl PackageDesignator for UndeterminedPackage {
 
 impl UndeterminedPackage {
     /// Determine its package type from name string.
-    pub fn determine(&self) -> Option<PackageDesignator> {
+    pub fn determine(&self) -> Option<Box<dyn PackageDesignator>> {
         let s = self.0;
         if let Some(_) = s.find(':') {
             let parts: Vec<&str> = s.splitn(2, ":").collect();
             if parts.len() == 2 {
-                Some(GithubRepository {
+                let github = GithubRepository {
                     user: parts.get(0).unwrap().to_string(),
                     name: parts.get(1).unwrap().to_string(),
-                })
+                };
+                Some(Box::new(github))
             } else {
                 None
             }
