@@ -7,6 +7,7 @@ edition = "2018"
 
 [dependencies]
 mmmpm_package = { path = "crates/package" }
+mmmpm_host = { path = "crates/host" }
 
 clap = { version = "2.33.3", features = ["yaml"] }
 dirs = "3.0.1"

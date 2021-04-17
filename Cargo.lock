@@ -509,8 +509,16 @@ dependencies = [
  "dirs",
  "env_logger",
  "log",
+ "mmmpm_host",
  "mmmpm_package",
  "reqwest",
+]
+
+[[package]]
+name = "mmmpm_host"
+version = "0.1.0"
+dependencies = [
+ "mmmpm_package",
 ]
 
 [[package]]
