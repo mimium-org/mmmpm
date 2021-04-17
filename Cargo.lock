@@ -510,6 +510,7 @@ dependencies = [
  "env_logger",
  "log",
  "mmmpm_host",
+ "mmmpm_host_github",
  "mmmpm_package",
  "reqwest",
 ]
@@ -520,6 +521,10 @@ version = "0.1.0"
 dependencies = [
  "mmmpm_package",
 ]
+
+[[package]]
+name = "mmmpm_host_github"
+version = "0.1.0"
 
 [[package]]
 name = "mmmpm_package"
