@@ -66,19 +66,19 @@ pub struct MimiumPackage {
 
 impl PackageDesignator for MimiumPackage {
     fn name(&self) -> String {
-        self.0
+        self.0.clone()
     }
 }
 
 impl PackageDesignator for GithubRepository {
     fn name(&self) -> String {
-        self.name
+        format!("{}/{}", self.user, self.name)
     }
 }
 
 impl PackageDesignator for UndeterminedPackage {
     fn name(&self) -> String {
-        self.0
+        self.0.clone()
     }
 }
 
