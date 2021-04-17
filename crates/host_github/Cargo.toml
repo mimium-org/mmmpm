@@ -1,0 +1,9 @@
+[package]
+name = "mmmpm_host_github"
+version = "0.1.0"
+authors = ["t-sin <shinichi.tanaka45@gmail.com>"]
+description = "A package host abstraction: GitHub"
+edition = "2018"
+
+[dependencies]
+mmmpm_host_github = { path = "../host_github" }
