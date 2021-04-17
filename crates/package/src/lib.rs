@@ -85,7 +85,7 @@ impl PackageDesignator for UndeterminedPackage {
 impl UndeterminedPackage {
     /// Determine its package type from name string.
     pub fn determine(&self) -> Option<Box<dyn PackageDesignator>> {
-        let s = self.0;
+        let s = &self.0;
         if let Some(_) = s.find(':') {
             let parts: Vec<&str> = s.splitn(2, ":").collect();
             if parts.len() == 2 {
