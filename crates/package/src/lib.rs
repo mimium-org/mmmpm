@@ -29,7 +29,7 @@ pub struct UndeterminedPackage(String);
 /// The package configuration.
 /// This struct stores some information to run the package as a mimium program.
 #[derive(Deserialize)]
-pub struct Package {
+pub struct PackageConfig {
     /// An entrypoint file path.
     /// This path must be a file and the file pointed by the path must contain `dsp` function,
     /// it is an entrypoint of mimium program.
@@ -58,9 +58,9 @@ pub struct PackageMetadata {
 ///
 /// This object created from `mmm.toml` in the storage.
 #[derive(Deserialize)]
-pub struct MimiumPackage {
+pub struct Package {
     pub metadata: PackageMetadata,
-    pub package: Package,
+    pub package: PackageConfig,
     // pub deps: PackageDependency,
 }
 
