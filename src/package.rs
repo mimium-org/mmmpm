@@ -111,7 +111,7 @@ impl PackageDesignator {
                 // Second, check if it's a Git repo so search in Git repos.
                 info!("Check if it'a git package");
                 let mut git_dir = root_dir.clone();
-                git_dir.extend(&[MMMPM_PACKAGE_DIR]);
+                git_dir.extend(&[MMMPM_GIT_DIR]);
                 if let Ok(entries) = fs::read_dir(git_dir) {
                     // For all Git repository host directories ...
                     for entry in
