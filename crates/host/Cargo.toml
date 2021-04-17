@@ -6,3 +6,4 @@ description = "A package host abstraction"
 edition = "2018"
 
 [dependencies]
+mmmpm_package = { path = "../package" }
