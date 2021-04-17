@@ -1,11 +1,11 @@
-use std::path::Path;
+extern crate serde;
+extern crate toml;
 
 use serde::Deserialize;
 
 /// The abstract representation of name of packages.
 /// Each implementers of this trait denots a certain type of package.
 pub trait PackageDesignator {
-    //
     fn name(&self) -> String;
 }
 

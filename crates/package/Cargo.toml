@@ -6,3 +6,5 @@ description = "A package abstraction"
 edition = "2018"
 
 [dependencies]
+serde = { version = "1.0.124", features = ["derive"] }
+toml = "0.5.8"
