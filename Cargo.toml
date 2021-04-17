@@ -6,6 +6,8 @@ description = "A package manager for mimium"
 edition = "2018"
 
 [dependencies]
+mmmpm_package = { path = "crates/package" }
+
 clap = { version = "2.33.3", features = ["yaml"] }
 dirs = "3.0.1"
 
