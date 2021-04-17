@@ -1,3 +1,5 @@
+//! The abstraction for packages and its names.
+
 extern crate serde;
 extern crate toml;
 
