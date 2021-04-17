@@ -2,9 +2,6 @@ extern crate clap;
 extern crate dirs;
 extern crate log;
 
-extern crate serde;
-extern crate toml;
-
 extern crate reqwest;
 
 use log::LevelFilter;
