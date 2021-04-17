@@ -8,8 +8,6 @@ extern crate toml;
 extern crate reqwest;
 
 mod constant;
-mod package;
-mod subcommand;
 
 use log::{error, info, LevelFilter};
 use std::fs::create_dir;
@@ -59,16 +57,10 @@ fn main() {
     if let Some(path) = mimium_dir {
         match ensure_dir(path.clone()) {
             Ok(_) => match matches.subcommand() {
-                ("install", Some(sub_m)) => {
-                    let _ = subcommand::install(path, sub_m);
-                }
+                ("install", Some(sub_m)) => println!("subcommand: install"),
 
                 ("list", Some(_)) => println!("subcommand: list"),
-                ("run", Some(sub_m)) => {
-                    if let Err(err) = subcommand::run(path, sub_m) {
-                        error!("Subcommand `run` failed because of {:?}", err);
-                    }
-                }
+                ("run", Some(sub_m)) => println!("subcommand: run"),
                 _ => println!("{}", matches.usage()),
             },
             err => {
