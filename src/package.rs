@@ -187,8 +187,24 @@ pub struct Package {
     pub entrypoint: String,
 }
 
-impl Package {
-    pub fn from_path(pkg_path: &Path) -> Result<Package, toml::de::Error> {
+#[derive(Deserialize)]
+pub struct PackageMetadata {
+    pub name: String,
+    pub version: String,
+    pub authors: Vec<String>,
+    pub license: String,
+    pub description: Option<String>,
+}
+
+#[derive(Deserialize)]
+pub struct MmmPackage {
+    pub metadata: PackageMetadata,
+    pub package: Package,
+    // pub deps: PackageDependency,
+}
+
+impl MmmPackage {
+    pub fn from_path(pkg_path: &Path) -> Result<MmmPackage, toml::de::Error> {
         info!("Parse package file {:?}", pkg_path);
 
         let mut pkg_file = String::new();

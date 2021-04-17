@@ -6,7 +6,7 @@ use clap::ArgMatches;
 use log::info;
 
 use crate::constant::MIMIUM_EXECUTABLE;
-use crate::package::{Package, PackageDesignator};
+use crate::package::{MmmPackage, Package, PackageDesignator};
 
 #[derive(Debug)]
 pub enum RunError<'a> {
@@ -37,14 +37,18 @@ fn parse_options<'a>(matches: &'a ArgMatches<'a>) -> Result<CmdOption, RunError<
     Ok(opts)
 }
 
-fn run_package<'a>(mimium_dir: PathBuf, pkg: Package, opt: CmdOption) -> Result<(), RunError<'a>> {
+fn run_package<'a>(
+    mimium_dir: PathBuf,
+    mmm: MmmPackage,
+    opt: CmdOption,
+) -> Result<(), RunError<'a>> {
     info!("Run package {}.", opt.package_designator.name());
 
     let entrypoint_path = format!(
         "{}/{}/{}",
         mimium_dir.to_str().unwrap(),
         opt.package_designator.path().unwrap().to_str().unwrap(),
-        pkg.entrypoint,
+        mmm.package.entrypoint,
     );
     let args = &[entrypoint_path];
 
@@ -74,7 +78,7 @@ pub fn run<'a>(mimium_dir: PathBuf, matches: &'a ArgMatches<'a>) -> Result<(), R
                 } else {
                     let mut pkg_path = mimium_dir.clone();
                     pkg_path.extend(&[pkg_dsn.package_file_path().unwrap()]);
-                    match Package::from_path(&pkg_path) {
+                    match MmmPackage::from_path(&pkg_path) {
                         Ok(pkg) => run_package(mimium_dir, pkg, opt),
                         Err(_) => Err(RunError::MalformedPackage),
                     }
