@@ -1,4 +1,5 @@
 /// Denotes archive file retrieved from package host.
+#[derive(Debug)]
 pub enum Archive {
     Zip(Vec<u8>),
 }

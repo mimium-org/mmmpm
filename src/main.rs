@@ -35,9 +35,20 @@ fn main() {
         Some(pkgdsn) => {
             println!("{:?}", pkgdsn.name());
             let host = pkgdsn.host();
+            let mut pkg_exists = false;
             match host.exists() {
-                Ok(exists) => println!("result = {}", exists),
+                Ok(exists) => {
+                    println!("result = {}", exists);
+                    pkg_exists = true;
+                }
                 Err(err) => println!("error: {:?}", err),
+            }
+
+            if pkg_exists {
+                match host.retrieve() {
+                    Ok(archive) => println!("{:?}", archive),
+                    Err(err) => println!("error: {:?}", err),
+                }
             }
         }
         None => println!("none!!"),
