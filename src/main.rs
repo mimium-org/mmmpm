@@ -2,8 +2,6 @@ extern crate clap;
 extern crate dirs;
 extern crate log;
 
-extern crate reqwest;
-
 use log::LevelFilter;
 
 fn main() {
