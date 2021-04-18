@@ -53,16 +53,25 @@ impl UndeterminedPackage {
     pub fn determine(&self) -> Option<Box<dyn PackageDesignator>> {
         let s = &self.0;
         if let Some(_) = s.find(':') {
-            let parts: Vec<&str> = s.splitn(2, ":").collect();
-            if parts.len() == 2 {
-                let github = GithubRepository {
-                    user: parts.get(0).unwrap().to_string(),
-                    name: parts.get(1).unwrap().to_string(),
-                };
-                Some(Box::new(github))
-            } else {
-                None
+            let host_path: Vec<&str> = s.splitn(2, ":").collect();
+
+            if host_path.len() != 2 {
+                return None;
             }
+
+            let _host = host_path.get(0).unwrap();
+            let path = host_path.get(1).unwrap();
+            let user_repo: Vec<&str> = path.splitn(2, "/").collect();
+
+            if user_repo.len() != 2 {
+                return None;
+            }
+
+            let github = GithubRepository {
+                user: user_repo.get(0).unwrap().to_string(),
+                name: user_repo.get(1).unwrap().to_string(),
+            };
+            Some(Box::new(github))
         } else {
             let mimium = MimiumPackage(s.to_string());
             Some(Box::new(mimium))
