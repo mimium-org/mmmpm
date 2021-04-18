@@ -1,106 +1,21 @@
-//! The abstraction for packages and its names.
+//! This crate provides some package related abstraction.
+//!
+//! First, the struct `Package` represents package itself. It contains program configuration,
+//! metadata and dependencies of package. This struct is created by reading `mmm.toml` in the
+//! directory in the storage.
+//!
+//! The struct `PackageDesignator` is a name and type of package. This is used to distinguish
+//! user-specified package name strings.
+//!
+//! Ths struct `PackageHost` represents the hosting service of mimium packages.
 
 extern crate serde;
 extern crate toml;
 
-use serde::Deserialize;
+mod designator;
+mod host;
+mod package;
 
-/// The abstract representation of name of packages.
-/// Each implementers of this trait denots a certain type of package.
-pub trait PackageDesignator {
-    fn name(&self) -> String;
-}
-
-/// [**Not used now**]
-/// Denotes mimium packages hosted by mimium package website in the future.
-pub struct MimiumPackage(String);
-
-/// Denotes mimium packages hosted as Git repository by GitHub.
-pub struct GithubRepository {
-    /// User/Organization name on GitHub.
-    user: String,
-    /// Repository name on GitHub.
-    name: String,
-}
-
-/// Denotes packages that its type is not determined yet.
-/// A package name specified by the user via CLI interface is treated as this type.
-/// To use as a package that have concrete type, first, we must determine its type from its internal string.
-pub struct UndeterminedPackage(String);
-
-/// The package configuration.
-/// This struct stores some information to run the package as a mimium program.
-#[derive(Deserialize)]
-pub struct PackageConfig {
-    /// An entrypoint file path.
-    /// This path must be a file and the file pointed by the path must contain `dsp` function,
-    /// it is an entrypoint of mimium program.
-    pub entrypoint: String,
-}
-
-/// The meta information of a package.
-/// This is not needed to run a package, but is useful information to users.
-#[derive(Deserialize)]
-pub struct PackageMetadata {
-    /// A name of this package.
-    pub name: String,
-    /// A version of this package.
-    /// TODO: specify a format for version string.
-    pub version: String,
-    /// A description of this package.
-    pub description: Option<String>,
-    /// Authors of this package.
-    pub authors: Vec<String>,
-    /// Licenses applied to this package.
-    pub licenses: Vec<String>,
-}
-
-/// The mimium package.
-/// This includes metadata, configuration to run and, in the future, package dependency.
-///
-/// This object created from `mmm.toml` in the storage.
-#[derive(Deserialize)]
-pub struct Package {
-    pub metadata: PackageMetadata,
-    pub package: PackageConfig,
-    // pub deps: PackageDependency,
-}
-
-impl PackageDesignator for MimiumPackage {
-    fn name(&self) -> String {
-        self.0.clone()
-    }
-}
-
-impl PackageDesignator for GithubRepository {
-    fn name(&self) -> String {
-        format!("{}/{}", self.user, self.name)
-    }
-}
-
-impl PackageDesignator for UndeterminedPackage {
-    fn name(&self) -> String {
-        self.0.clone()
-    }
-}
-
-impl UndeterminedPackage {
-    /// Determine its package type from name string.
-    pub fn determine(&self) -> Option<Box<dyn PackageDesignator>> {
-        let s = &self.0;
-        if let Some(_) = s.find(':') {
-            let parts: Vec<&str> = s.splitn(2, ":").collect();
-            if parts.len() == 2 {
-                let github = GithubRepository {
-                    user: parts.get(0).unwrap().to_string(),
-                    name: parts.get(1).unwrap().to_string(),
-                };
-                Some(Box::new(github))
-            } else {
-                None
-            }
-        } else {
-            None
-        }
-    }
-}
+pub use designator::*;
+pub use host::*;
+pub use package::*;
