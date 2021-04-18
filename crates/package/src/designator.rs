@@ -64,7 +64,8 @@ impl UndeterminedPackage {
                 None
             }
         } else {
-            None
+            let mimium = MimiumPackage(s.to_string());
+            Some(Box::new(mimium))
         }
     }
 }
