@@ -4,6 +4,7 @@ pub enum Archive {
 }
 
 /// Errors denotes operation failure to hosts.
+#[derive(Debug)]
 pub enum HostOperationError {
     CannotConnectToHost(String),
     PackageNotFound,
