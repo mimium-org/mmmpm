@@ -45,6 +45,10 @@ impl PackageDesignator for GithubRepository {
 }
 
 impl UndeterminedPackage {
+    pub fn new(name: String) -> UndeterminedPackage {
+        UndeterminedPackage(name)
+    }
+
     /// Determine its package type from name string.
     pub fn determine(&self) -> Option<Box<dyn PackageDesignator>> {
         let s = &self.0;
