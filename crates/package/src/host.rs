@@ -8,6 +8,7 @@ pub enum HostOperationError {
     CannotConnectToHost(String),
     PackageNotFound,
     InvalidPackage,
+    UnknownError,
 }
 
 /// Allowed operation to package hosts.
