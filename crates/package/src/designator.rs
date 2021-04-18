@@ -40,7 +40,9 @@ impl PackageDesignator for GithubRepository {
     }
 
     fn host(&self) -> Box<dyn PackageHost> {
-        Box::new(NotImplementedHost())
+        let host =
+            mmmpm_host_github::GithubRepository::new(self.user.clone(), self.name.clone(), None);
+        Box::new(host)
     }
 }
 
