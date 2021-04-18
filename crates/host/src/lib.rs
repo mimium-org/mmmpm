@@ -10,6 +10,8 @@ pub enum Archive {
 /// Errors denotes operation failure to hosts.
 pub enum HostOperationError {
     CannotConnectToHost(String),
+    PackageNotFound,
+    InvalidPackage,
 }
 
 /// Allowed operation to package hosts.
