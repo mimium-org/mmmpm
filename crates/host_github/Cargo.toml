@@ -6,7 +6,7 @@ description = "A package host abstraction: GitHub"
 edition = "2018"
 
 [dependencies]
-mmmpm_package = { path = "../package" }
+mmmpm_host = { path = "../host" }
 
 bytes = "1.0.1"
 zip = "0.5.12"

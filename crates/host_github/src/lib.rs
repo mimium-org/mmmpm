@@ -2,7 +2,7 @@ extern crate bytes;
 extern crate reqwest;
 extern crate zip;
 
-use mmmpm_package::{Archive, HostOperationError, PackageHost};
+use mmmpm_host::{Archive, HostOperationError, PackageHost};
 
 const GITHUB_BASE_URL: &str = "https://github.com";
 const GITHUB_API_BASE_URL: &str = "https://api.github.com";

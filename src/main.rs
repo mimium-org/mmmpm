@@ -4,6 +4,8 @@ extern crate log;
 
 use log::LevelFilter;
 
+use mmmpm_package::UndeterminedPackage;
+
 fn main() {
     let yaml = clap::load_yaml!("cli.yml");
     let matches = clap::App::from_yaml(yaml).get_matches();
@@ -25,5 +27,12 @@ fn main() {
         ("list", Some(_)) => println!("subcommand: list"),
         ("run", Some(_)) => println!("subcommand: run"),
         _ => println!("{}", matches.usage()),
+    }
+
+    // test code
+    let pkg_name = UndeterminedPackage::new("test".to_string());
+    match pkg_name.determine() {
+        Some(pkgdsn) => println!("{:?}", pkgdsn.name()),
+        None => println!("none!!"),
     }
 }

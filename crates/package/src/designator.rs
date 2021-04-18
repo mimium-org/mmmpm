@@ -1,4 +1,4 @@
-use crate::host::{NotImplementedHost, PackageHost};
+use mmmpm_host::{NotImplementedHost, PackageHost};
 
 /// The abstract representation of name of packages.
 /// Each implementers of this trait denots a certain type of package.

@@ -13,9 +13,7 @@ extern crate serde;
 extern crate toml;
 
 mod designator;
-mod host;
 mod package;
 
 pub use designator::*;
-pub use host::*;
 pub use package::*;

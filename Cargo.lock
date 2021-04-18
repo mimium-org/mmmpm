@@ -573,16 +573,21 @@ dependencies = [
  "dirs",
  "env_logger",
  "log",
+ "mmmpm_host",
  "mmmpm_host_github",
  "mmmpm_package",
 ]
+
+[[package]]
+name = "mmmpm_host"
+version = "0.1.0"
 
 [[package]]
 name = "mmmpm_host_github"
 version = "0.1.0"
 dependencies = [
  "bytes",
- "mmmpm_package",
+ "mmmpm_host",
  "reqwest",
  "zip",
 ]
@@ -591,6 +596,7 @@ dependencies = [
 name = "mmmpm_package"
 version = "0.1.0"
 dependencies = [
+ "mmmpm_host",
  "serde",
  "toml",
 ]
