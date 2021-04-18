@@ -6,4 +6,6 @@ description = "A package host abstraction: GitHub"
 edition = "2018"
 
 [dependencies]
-
+bytes = "1.0.1"
+zip = "0.5.12"
+reqwest = { version = "0.11.2", features = ["blocking"] }
