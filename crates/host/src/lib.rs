@@ -16,6 +16,7 @@ pub enum HostOperationError {
 
 /// Allowed operation to package hosts.
 pub trait PackageHost {
-    fn exists(pkgdsn: &dyn PackageDesignator) -> Result<bool, HostOperationError>;
-    fn retrieve(pkgdsn: &dyn PackageDesignator) -> Result<Archive, HostOperationError>;
+    fn get_host(pkgdsn: &dyn PackageDesignator);
+    fn exists(&self) -> Result<bool, HostOperationError>;
+    fn retrieve(&self) -> Result<Archive, HostOperationError>;
 }
