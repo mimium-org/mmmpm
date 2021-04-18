@@ -3,7 +3,9 @@
 use mmmpm_package::PackageDesignator;
 
 /// Denotes archive file retrieved from package host.
-pub struct Archive();
+pub enum Archive {
+    Zip(Vec<u8>),
+}
 
 /// Errors denotes operation failure to hosts.
 pub enum HostOperationError {
