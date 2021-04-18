@@ -597,6 +597,7 @@ name = "mmmpm_package"
 version = "0.1.0"
 dependencies = [
  "mmmpm_host",
+ "mmmpm_host_github",
  "serde",
  "toml",
 ]

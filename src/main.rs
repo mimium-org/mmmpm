@@ -30,9 +30,16 @@ fn main() {
     }
 
     // test code
-    let pkg_name = UndeterminedPackage::new("test".to_string());
+    let pkg_name = UndeterminedPackage::new("github.com:t-sin/koto".to_string());
     match pkg_name.determine() {
-        Some(pkgdsn) => println!("{:?}", pkgdsn.name()),
+        Some(pkgdsn) => {
+            println!("{:?}", pkgdsn.name());
+            let host = pkgdsn.host();
+            match host.exists() {
+                Ok(exists) => println!("result = {}", exists),
+                Err(err) => println!("error: {:?}", err),
+            }
+        }
         None => println!("none!!"),
     }
 }
