@@ -14,6 +14,16 @@ impl FilesystemStorage {
 
 impl StorageOperation for FilesystemStorage {
     fn connect(self) -> Result<(), StorageError> {
+        if !self.root.exists() {
+            let msg = format!("Root path {} does not exist")
+            return Err(StorageError::FailedToConnect(msg))
+        }
+
+        if !self.root.is_dir() {
+            let msg = format!("Root path {} is not a directory")
+            return Err(StorageError::FailedToConnect(msg))
+        }
+
         Ok(())
     }
 
