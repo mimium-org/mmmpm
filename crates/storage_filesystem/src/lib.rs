@@ -6,6 +6,12 @@ pub struct FilesystemStorage {
     root: Path,
 }
 
+impl FilesystemStorage {
+    pub fn new(path: &path::Path) -> FilesystemStorage {
+        FilesystemStorage { root: path }
+    }
+}
+
 impl StorageOperation for FilesystemStorage {
     fn connect(self) -> Result<(), StorageError> {
         Ok(())
