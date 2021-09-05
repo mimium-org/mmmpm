@@ -3,12 +3,14 @@ use std::path;
 use mmmpm_storage::{Object, ObjectKind, ObjectList, Path, StorageError, StorageOperation};
 
 pub struct FilesystemStorage {
-    root: Path,
+    root: path::PathBuf,
 }
 
 impl FilesystemStorage {
     pub fn new(path: &path::Path) -> FilesystemStorage {
-        FilesystemStorage { root: path }
+        FilesystemStorage {
+            root: path.to_path_buf(),
+        }
     }
 }
 
