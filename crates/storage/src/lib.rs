@@ -2,7 +2,20 @@
 //!
 //! This module is under designing so this is not *used* from any other code now.
 
+#[derive(Debug)]
 pub struct Path(Vec<String>);
+
+impl Path {
+    pub fn new(path: Vec<&str>) -> Path {
+        let mut new_path = Vec::new();
+
+        for o in path.iter() {
+            new_path.push(o.to_string());
+        }
+
+        Path(new_path)
+    }
+}
 
 #[derive(Debug)]
 pub enum StorageError {
