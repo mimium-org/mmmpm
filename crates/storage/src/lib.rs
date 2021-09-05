@@ -63,22 +63,22 @@ pub trait StorageOperation {
     // Start a session with a storage. This may occurs initialization like existence check,
     // creating directory etc.
     // This method may not be called, this is determined by implementation.
-    fn connect(self) -> Result<(), StorageError>;
+    fn connect(&self) -> Result<(), StorageError>;
 
     // Check if an object specified as `path` exists. This method does not read contents of the object.
-    fn object_exists(self, path: &Path) -> Result<bool, StorageError>;
+    fn object_exists(&self, path: &Path) -> Result<bool, StorageError>;
 
     // Read object specified as `path` from the strorage.
     // If no object is found at `path`, this method returns `ObjectNotFound`.
-    fn read_object(self, path: &Path) -> Result<Object, StorageError>;
+    fn read_object(&self, path: &Path) -> Result<Object, StorageError>;
 
     // Write an object specified as `path` to the storage.
     // If an object already exists at `path`, this method returns `ObjectAlreadyExists`.
-    fn write_object(self, path: &Path, obj: &Object) -> Result<(), StorageError>;
+    fn write_object(&self, path: &Path, obj: &Object) -> Result<(), StorageError>;
 
     // Create a directory specified `path` and return created directory.
-    fn create_dir(self, path: &Path) -> Result<(), StorageError>;
+    fn create_dir(&self, path: &Path) -> Result<(), StorageError>;
 
     // Get all objects in the directory specified `path`.
-    fn read_dir(self, path: &Path) -> Result<ObjectList, StorageError>;
+    fn read_dir(&self, path: &Path) -> Result<ObjectList, StorageError>;
 }

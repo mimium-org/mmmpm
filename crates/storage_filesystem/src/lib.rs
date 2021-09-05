@@ -13,7 +13,7 @@ impl FilesystemStorage {
 }
 
 impl StorageOperation for FilesystemStorage {
-    fn connect(self) -> Result<(), StorageError> {
+    fn connect(&self) -> Result<(), StorageError> {
         if !self.root.exists() {
             let msg = format!("Root path {} does not exist")
             return Err(StorageError::FailedToConnect(msg))
@@ -27,11 +27,11 @@ impl StorageOperation for FilesystemStorage {
         Ok(())
     }
 
-    fn object_exists(self, path: &Path) -> Result<bool, StorageError> {
+    fn object_exists(&self, path: &Path) -> Result<bool, StorageError> {
         Ok(false)
     }
 
-    fn read_object(self, path: &Path) -> Result<Object, StorageError> {
+    fn read_object(&self, path: &Path) -> Result<Object, StorageError> {
         Ok(Object {
             kind: ObjectKind::Text,
             bin: None,
@@ -40,15 +40,15 @@ impl StorageOperation for FilesystemStorage {
         })
     }
 
-    fn write_object(self, path: &Path, obj: &Object) -> Result<(), StorageError> {
+    fn write_object(&self, path: &Path, obj: &Object) -> Result<(), StorageError> {
         Ok(())
     }
 
-    fn create_dir(self, path: &Path) -> Result<(), StorageError> {
+    fn create_dir(&self, path: &Path) -> Result<(), StorageError> {
         Ok(())
     }
 
-    fn read_dir(self, path: &Path) -> Result<ObjectList, StorageError> {
+    fn read_dir(&self, path: &Path) -> Result<ObjectList, StorageError> {
         let list = Vec::new();
         Ok(ObjectList::new(list))
     }
