@@ -2,9 +2,44 @@ extern crate clap;
 extern crate dirs;
 extern crate log;
 
-use log::LevelFilter;
+mod constant;
 
+use std::path::PathBuf;
+
+use log::{error, info, LevelFilter};
+
+use mmmpm_host::Archive;
 use mmmpm_package::UndeterminedPackage;
+use mmmpm_storage::{Path, StorageOperation};
+use mmmpm_storage_filesystem::FilesystemStorage;
+
+struct MmmpmConfig {
+    fs: FilesystemStorage,
+}
+
+fn configure_mmmpm() -> MmmpmConfig {
+    let mut fs: Option<FilesystemStorage> = None;
+
+    match dirs::home_dir() {
+        Some(mut path) => {
+            path.push(constant::MMMPM_DIR);
+            info!("mmmpm directory = {:?}", path);
+            fs = Some(FilesystemStorage::new(&path));
+
+            if let Err(err) = config.fs.connect() {
+                error!("cannot start filesystem session because {:?}", err);
+                return;
+            }
+        }
+
+        None => {
+            error!("cannot found your home directory.");
+            return;
+        }
+    }
+
+    MmmpmConfig { fs: fs.unwrap() }
+}
 
 fn main() {
     let yaml = clap::load_yaml!("cli.yml");
@@ -20,7 +55,8 @@ fn main() {
         .format_timestamp(None)
         .init();
 
-    // TODO: create filesystem storage from `~/.mimium`
+    let config = configure_mmmpm();
+
     match matches.subcommand() {
         ("install", Some(_)) => println!("subcommand: install"),
 
@@ -29,13 +65,18 @@ fn main() {
         _ => println!("{}", matches.usage()),
     }
 
-    // test code
+    //// インストール処理の実験
+
+    // パッケージ種類の判定っぽいコード
     let pkg_name = UndeterminedPackage::new("github.com:t-sin/koto".to_string());
+    let mut archive: Option<Archive> = None;
     match pkg_name.determine() {
         Some(pkgdsn) => {
             println!("{:?}", pkgdsn.name());
             let host = pkgdsn.host();
             let mut pkg_exists = false;
+
+            // パッケージが確定できたので存在確認
             match host.exists() {
                 Ok(exists) => {
                     println!("result = {}", exists);
@@ -45,12 +86,40 @@ fn main() {
             }
 
             if pkg_exists {
+                // パッケージが存在したのでアーカイブの取得
                 match host.retrieve() {
-                    Ok(archive) => println!("{:?}", archive),
+                    Ok(retrieved) => {
+                        println!("retrived.");
+                        archive = Some(retrieved);
+                    }
                     Err(err) => println!("error: {:?}", err),
                 }
             }
         }
-        None => println!("none!!"),
+        None => {
+            println!("none!!");
+            return;
+        }
     }
+
+    // GitHubパッケージのフォルタ存在確認（なければつくる）
+    let github_dir = Path::new(vec![constant::MMMPM_DIR, "GitHub"]);
+    match config.fs.object_exists(&github_dir) {
+        Ok(exists) => {
+            if exists {
+                println!("{:?} exists.", github_dir);
+            } else {
+                println!("{:?} does not exists.", github_dir);
+                match config.fs.create_dir(&github_dir) {
+                    Ok(_) => {}
+                    Err(err) => panic!("cannot create {:?}", &github_dir),
+                }
+                println!("{:?} is created.", github_dir);
+            }
+        }
+        Err(err) => panic!("error: {:?}"),
+    }
+
+    // パッケージをGitHubのところに置く
+    panic!("not implemented!");
 }
